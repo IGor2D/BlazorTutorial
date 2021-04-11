@@ -27,6 +27,12 @@ namespace EmployeeManagement.Api.Models
                 .FirstOrDefaultAsync(e => e.EmployeeId == employeeId);
         }
 
+        public async Task<Employee> GetEmployeeByEmail(string email)
+        {
+            return await appDbContext.Employees
+                .FirstOrDefaultAsync(e => e.Email == email);
+        }
+
         public async Task<Employee> AddEmployee(Employee employee)
         {
             var result = await appDbContext.Employees.AddAsync(employee);
@@ -57,7 +63,7 @@ namespace EmployeeManagement.Api.Models
             return null;
         }
 
-        public async void DeleteEmployee(int employeeId)
+        public async Task<Employee> DeleteEmployee(int employeeId)
         {
             var result = await appDbContext.Employees
                 .FirstOrDefaultAsync(e => e.EmployeeId == employeeId);
@@ -65,7 +71,9 @@ namespace EmployeeManagement.Api.Models
             {
                 appDbContext.Employees.Remove(result);
                 await appDbContext.SaveChangesAsync();
+                return result;
             }
+            return null;
         }
 
         Task<IEnumerable<Employee>> IEmployeeRepository.GetEmployees()
@@ -76,6 +84,24 @@ namespace EmployeeManagement.Api.Models
         Task<Employee> IEmployeeRepository.GetEmployee(int employeeId)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<Employee>> Search(string name, Gender? gender)
+        {
+            IQueryable<Employee> query = appDbContext.Employees;
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = query.Where(e => e.FirstName.Contains(name)
+                            || e.LastName.Contains(name));
+            }
+
+            if (gender != null)
+            {
+                query = query.Where(e => e.Gender == gender);
+            }
+
+            return await query.ToListAsync();
         }
     }
 }

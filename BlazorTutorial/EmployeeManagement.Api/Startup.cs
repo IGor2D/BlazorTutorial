@@ -56,7 +56,7 @@ namespace EmployeeManagement.Api
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapRazorPages();
+                endpoints.MapControllers();
             });
         }
     }
