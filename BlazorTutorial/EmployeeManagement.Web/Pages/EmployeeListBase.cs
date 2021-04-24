@@ -1,21 +1,26 @@
 ﻿using EmployeeManagement.Models;
+using EmployeeManagement.Web.Services;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EmployeeManagement.Web.Pages
 {
     public class EmployeeListBase : ComponentBase
     {
+        [Inject]
+        public IEmployeeService EmployeeService { get; set; }
+
         public IEnumerable<Employee> Employees { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
-            await Task.Run(LoadEmployees);
+            Employees = (await EmployeeService.GetEmployees()).ToList();
         }
 
-        private void LoadEmployees()
+       /*private void LoadEmployees()
         {
             System.Threading.Thread.Sleep(2000);
             Employee e1 = new Employee
@@ -68,5 +73,6 @@ namespace EmployeeManagement.Web.Pages
 
             Employees = new List<Employee> { e1, e2, e3, e4 };
         }
+       */
     }
 }
